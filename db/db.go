@@ -14,6 +14,7 @@ const (
 )
 
 // функция подключения к бд
+
 func InitDB() {
 	var err error
 	DB, err = sql.Open("pgx", dsn)
@@ -27,6 +28,7 @@ func InitDB() {
 }
 
 // функция закрытия подключения к бд
+
 func CloseDB() {
 	if DB != nil {
 		DB.Close()

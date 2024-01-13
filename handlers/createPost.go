@@ -2,25 +2,35 @@ package handlers
 
 import (
 	"blog/db"
+	"blog/utils"
 	"encoding/json"
 	"log"
 	"net/http"
 )
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	// Извлекаем токен из запроса
+	tokenString := utils.ExtractToken(r)
+
+	// Проверяем подлинность токена
+	_, err := utils.ValidateToken(tokenString, "your-secret-key")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var post db.Post
 
 	db.InitDB()
 	defer db.CloseDB()
 
-	err := json.NewDecoder(r.Body).Decode(&post)
+	err = json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if err = db.CreatePostDB(&post); err != nil {
-		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		http.Error(w, "Failed to create post", http.StatusInternalServerError)
 		return
 	}
 
@@ -28,13 +38,4 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(post)
-
-	// // SQL-запрос для вставки пользователя
-	// _, err = db.Exec(`INSERT INTO posts (post_title, post_content) VALUES ($1, $2) RETURNING post_id`,
-	// 	post.PostTitle, post.PostContent)
-	// if err != nil {
-	// 	http.Error(w, "Failed to create user", http.StatusInternalServerError)
-	// 	return
-	// }
-
 }

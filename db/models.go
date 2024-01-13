@@ -13,6 +13,7 @@ type Database interface {
 }
 
 // структура для таблицы бд с пользователями
+
 type User struct {
 	UserId       uint64        `json:"UserId"`
 	UserName     string        `json:"UserName"`
@@ -22,6 +23,7 @@ type User struct {
 }
 
 // структура для таблицы бд с постами
+
 type Post struct {
 	PostId      uint64        `json:"PostId"`
 	UserId      sql.NullInt64 `json:"UserId"`
