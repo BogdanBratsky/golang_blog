@@ -14,10 +14,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Открываем соединение с базой данных
-	db.InitDB()
-	// Закрываем соединение с базой данных
-	defer db.CloseDB()
+	// // Открываем соединение с базой данных
+	// db.InitDB()
+	// // Закрываем соединение с базой данных
+	// defer db.CloseDB()
 
 	// Проверка на оригинальность почты
 	res, _ := db.EmailExists(&user.UserEmail)

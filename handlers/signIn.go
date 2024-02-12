@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 func SignInUser(w http.ResponseWriter, r *http.Request) {
@@ -16,16 +15,15 @@ func SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db.InitDB()
-	defer db.CloseDB()
+	// db.InitDB()
+	// defer db.CloseDB()
 
-	res, _ := db.UserExists(&user.UserEmail, &user.UserName, &user.PasswordHash)
+	res, _ := db.UserExists(&user.UserEmail, &user.PasswordHash)
 
-	if res {
+	if res > 0 {
 		fmt.Println("User exists")
 		// Пользователь существует, создаем JWT токен
-		userIdStr := strconv.FormatUint(user.UserId, 10)
-		token, err := utils.CreateToken(&userIdStr, &user.UserName)
+		token, err := utils.CreateToken(&res, &user.UserName)
 		if err != nil {
 			http.Error(w, "Error creating token", http.StatusInternalServerError)
 			fmt.Println("Error creating token:", err)

@@ -6,11 +6,15 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
-// функция для обработчика, получающая все записи из таблицы posts
-func GetPosts(w http.ResponseWriter, r *http.Request) {
+func GetArticlesByCategory(w http.ResponseWriter, r *http.Request) {
 	log.Println("Request received:", r.Method, r.URL)
+
+	vars := mux.Vars(r)
+	categoryID, _ := strconv.Atoi(vars["id"])
 
 	pageStr := r.FormValue("page")
 	perPageStr := r.FormValue("perPage")
@@ -25,9 +29,10 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 		perPage = 30
 	}
 
-	posts, totalCount, err := db.GetPostsFromDB(page, perPage)
+	posts, totalCount, err := db.GetArticlesByCategoryDB(&categoryID, &page, &perPage)
 	if err != nil {
-		http.Error(w, "Uncorrect request", http.StatusBadRequest)
+		log.Println("Error fetching user's posts data:", err)
+		http.Error(w, "User doesn't exist", http.StatusBadRequest)
 		return
 	}
 
@@ -41,14 +46,12 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 
 	jsonData, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Uncorrect request", http.StatusBadRequest)
-		return
+		log.Fatal(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(jsonData)
 	if err != nil {
-		http.Error(w, "Uncorrect request", http.StatusBadRequest)
-		return
+		log.Fatal(err)
 	}
 }

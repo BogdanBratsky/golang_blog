@@ -1,18 +1,22 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
-func UserExists(uEmail, uName, uPass *string) (bool, error) {
-	query := `SELECT COUNT(*) FROM users WHERE user_email = $1 AND user_name = $2 and password_hash = $3`
-	var count int
-	err := DB.QueryRow(query, uEmail, uName, uPass).Scan(&count)
+func UserExists(uEmail, uPass *string) (uint64, error) {
+	query := `SELECT user_id FROM users WHERE user_email = $1 AND password_hash = $2`
+	var usId uint64
+	err := DB.QueryRow(query, uEmail, uPass).Scan(&usId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Если нет строк, значит, почтовый адрес не существует
-			return false, nil
+			return 0, nil
 		}
 		// В случае другой ошибки возвращаем ошибку
-		return false, err
+		return 0, err
 	}
-	return count > 0, nil
+	fmt.Println(usId)
+	return usId, nil
 }

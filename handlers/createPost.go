@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,15 +20,16 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// db.InitDB()
+	// defer db.CloseDB()
+
 	var post db.Post
-
-	db.InitDB()
-	defer db.CloseDB()
-
 	err = json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 		log.Fatal(err)
 	}
+	post.UserId, _ = utils.ParseToken(tokenString)
+	post.CreatedAt = time.Now()
 
 	if err = db.CreatePostDB(&post); err != nil {
 		http.Error(w, "Failed to create post", http.StatusInternalServerError)

@@ -1,22 +1,34 @@
 package db
 
-func GetPostsFromDB() ([]Post, error) {
-	// sql-запрос на получение данных из таблицы posts
-	rows, err := DB.Query("SELECT * FROM posts ORDER BY post_id")
+func GetPostsFromDB(page, perPage int) ([]Post, int, error) {
+	offset := (page - 1) * perPage
+	limit := perPage
+
+	var p Post
+	var posts []Post
+	// SQL-запрос на получение данных из таблицы posts
+	query := `SELECT * FROM posts ORDER BY post_id DESC LIMIT $1 OFFSET $2`
+	rows, err := DB.Query(query, limit, offset)
 	if err != nil {
-		return nil, err
+		return posts, 0, err
 	}
 	defer rows.Close()
 
-	var posts []Post
 	for rows.Next() {
-		var p Post
-		err := rows.Scan(&p.PostId, &p.UserId, &p.CategoryId, &p.PostTitle, &p.PostContent, &p.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
+		rows.Scan(&p.PostId, &p.UserId, &p.CategoryId, &p.PostTitle, &p.PostContent, &p.CreatedAt)
+		// if err != nil {
+		// 	return nil, 0, err
+		// }
 		posts = append(posts, p)
 	}
 
-	return posts, nil
+	// Получение общего количества записей
+	countQuery := "SELECT COUNT(*) FROM posts"
+	var totalCount int
+	err = DB.QueryRow(countQuery).Scan(&totalCount)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return posts, totalCount, nil
 }

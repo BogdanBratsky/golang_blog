@@ -1,16 +1,13 @@
 package handlers
 
 import (
-	"blog/db"
 	"blog/utils"
-	"fmt"
+	"encoding/json"
+	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
-func DeletePost(w http.ResponseWriter, r *http.Request) {
+func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
 	// Извлекаем токен из запроса
 	tokenString := utils.ExtractToken(r)
 
@@ -21,19 +18,16 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vars := mux.Vars(r)
-	postId, _ := strconv.Atoi(vars["id"])
 	userId, _ := utils.ParseToken(tokenString)
 
-	result, err := db.DeletePostFromBD(&postId, &userId)
+	jsonData, err := json.Marshal(userId)
 	if err != nil {
-		http.Error(w, "Uncorrect request", http.StatusBadRequest)
-		return
+		log.Fatal(err)
 	}
 
-	if result != 1 {
-		http.Error(w, "Uncorrect request", http.StatusBadRequest)
-		return
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(jsonData)
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Fprint(w, "Article was deleted")
 }
