@@ -10,6 +10,30 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Request received:", r.Method, r.URL)
+
+	categories, err := db.GetCategoriesFromDB()
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusUnauthorized)
+		return
+	}
+
+	// сериализация данных из бд
+	w.Header().Set("Content-Type", "application/json")
+	jsonData, err := json.Marshal(categories)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusUnauthorized)
+		return
+	}
+
+	_, err = w.Write(jsonData)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusUnauthorized)
+		return
+	}
+}
+
 func GetCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Request received:", r.Method, r.URL)
 

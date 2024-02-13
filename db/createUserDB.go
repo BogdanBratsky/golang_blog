@@ -1,8 +1,11 @@
 package db
 
-import "database/sql"
+import (
+	"blog/models"
+	"database/sql"
+)
 
-func CreateUserDB(u *User) error {
+func CreateUserDB(u *models.User) error {
 	// SQL-запрос для вставки пользователя
 	query := `INSERT INTO users (user_name, user_email, password_hash) VALUES ($1, $2, $3) RETURNING user_id`
 	_, err := DB.Exec(query, u.UserName, u.UserEmail, u.PasswordHash)

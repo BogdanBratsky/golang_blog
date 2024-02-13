@@ -1,8 +1,10 @@
 package main
 
 import (
+	"blog/api/handlers"
+	"blog/config"
 	"blog/db"
-	"blog/handlers"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -17,18 +19,18 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/profile", handlers.UserProfileHandler).Methods("GET")
-	r.HandleFunc("/register", handlers.CreateUser).Methods("POST")
-	r.HandleFunc("/login", handlers.SignInUser).Methods("POST")
+	r.HandleFunc("/register", handlers.CreateUserHandler).Methods("POST")
+	r.HandleFunc("/login", handlers.LoginUserHandler).Methods("POST")
 	r.HandleFunc("/users", handlers.GetUsersHandler).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUserByIdHandler).Methods("GET")
-	r.HandleFunc("/users/{id}/articles", handlers.GetArticlesByUser).Methods("GET")
-	r.HandleFunc("/articles", handlers.GetPosts).Methods("GET")
+	r.HandleFunc("/users/{id}/articles", handlers.GetPostsByUserHandler).Methods("GET")
+	r.HandleFunc("/articles", handlers.GetPostsHandler).Methods("GET")
 	r.HandleFunc("/articles", handlers.CreatePostHandler).Methods("POST")
-	r.HandleFunc("/articles/{id}", handlers.GetPost).Methods("GET")
-	r.HandleFunc("/articles/{id}", handlers.DeletePost).Methods("DELETE")
+	r.HandleFunc("/articles/{id}", handlers.GetPostHandler).Methods("GET")
+	r.HandleFunc("/articles/{id}", handlers.DeletePostHandler).Methods("DELETE")
 	r.HandleFunc("/categories", handlers.GetCategoriesHandler).Methods("GET")
 	r.HandleFunc("/categories/{id}", handlers.GetCategoryHandler).Methods("GET")
-	r.HandleFunc("/categories/{id}/articles", handlers.GetArticlesByCategory).Methods("GET")
+	r.HandleFunc("/categories/{id}/articles", handlers.GetPostsByCategoryHandler).Methods("GET")
 
 	db.InitDB()
 	defer db.CloseDB()
@@ -42,6 +44,9 @@ func main() {
 
 	// Оборачиваем маршруты в обработчик CORS
 	handlerWithCORS := c.Handler(r)
+
+	conf := config.GetConfig()
+	fmt.Println(conf.Server.Port)
 
 	// Запускаем сервер
 	err := http.ListenAndServe(":3000", handlerWithCORS)

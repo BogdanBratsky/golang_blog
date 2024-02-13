@@ -1,6 +1,8 @@
 package db
 
-func GetUsersFromDB() ([]Users, error) {
+import "blog/models"
+
+func GetUsersFromDB() ([]models.Users, error) {
 	// sql-запрос на получение данных из таблицы users
 	rows, err := DB.Query("SELECT user_id, user_name, user_email, created_at FROM users")
 	if err != nil {
@@ -8,9 +10,9 @@ func GetUsersFromDB() ([]Users, error) {
 	}
 	defer rows.Close()
 
-	var users []Users
+	var users []models.Users
 	for rows.Next() {
-		var u Users
+		var u models.Users
 		err := rows.Scan(&u.UserId, &u.UserName, &u.UserEmail, &u.CreatedAt)
 		if err != nil {
 			return nil, err

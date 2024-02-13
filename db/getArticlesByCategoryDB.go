@@ -1,11 +1,13 @@
 package db
 
-func GetArticlesByCategoryDB(id, page, perPage *int) ([]Post, int, error) {
+import "blog/models"
+
+func GetArticlesByCategoryDB(id, page, perPage *int) ([]models.Post, int, error) {
 	offset := (*page - 1) * *perPage
 	limit := *perPage
 
-	var p Post
-	var posts []Post
+	var p models.Post
+	var posts []models.Post
 	query := `SELECT * FROM posts WHERE category_id = $1 ORDER BY post_id DESC LIMIT $2 OFFSET $3`
 	rows, err := DB.Query(query, *id, limit, offset)
 	if err != nil {

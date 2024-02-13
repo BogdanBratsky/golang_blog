@@ -1,13 +1,14 @@
 package db
 
 import (
+	"blog/models"
 	"database/sql"
 	"log"
 	"time"
 )
 
-func GetPostFromDB(id *int) (Post, error) {
-	var p Post
+func GetPostFromDB(id *int) (models.Post, error) {
+	var p models.Post
 	var createdAt sql.NullTime
 	query := `SELECT * FROM posts WHERE post_id = $1`
 	err := DB.QueryRow(query, *id).Scan(&p.PostId, &p.UserId, &p.CategoryId, &p.PostTitle, &p.PostContent, &createdAt)

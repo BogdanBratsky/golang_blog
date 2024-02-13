@@ -1,11 +1,13 @@
 package db
 
-func GetPostsFromDB(page, perPage int) ([]Post, int, error) {
+import "blog/models"
+
+func GetPostsFromDB(page, perPage int) ([]models.Post, int, error) {
 	offset := (page - 1) * perPage
 	limit := perPage
 
-	var p Post
-	var posts []Post
+	var p models.Post
+	var posts []models.Post
 	// SQL-запрос на получение данных из таблицы posts
 	query := `SELECT * FROM posts ORDER BY post_id DESC LIMIT $1 OFFSET $2`
 	rows, err := DB.Query(query, limit, offset)
