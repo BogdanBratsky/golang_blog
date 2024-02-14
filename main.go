@@ -2,9 +2,7 @@ package main
 
 import (
 	"blog/api/handlers"
-	"blog/config"
 	"blog/db"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +16,6 @@ func main() {
 	// обработчики запросов
 	r := mux.NewRouter()
 
-	r.HandleFunc("/profile", handlers.UserProfileHandler).Methods("GET")
 	r.HandleFunc("/register", handlers.CreateUserHandler).Methods("POST")
 	r.HandleFunc("/login", handlers.LoginUserHandler).Methods("POST")
 	r.HandleFunc("/users", handlers.GetUsersHandler).Methods("GET")
@@ -44,9 +41,6 @@ func main() {
 
 	// Оборачиваем маршруты в обработчик CORS
 	handlerWithCORS := c.Handler(r)
-
-	conf := config.GetConfig()
-	fmt.Println(conf.Server.Port)
 
 	// Запускаем сервер
 	err := http.ListenAndServe(":3000", handlerWithCORS)
