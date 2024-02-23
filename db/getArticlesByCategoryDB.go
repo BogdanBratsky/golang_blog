@@ -21,7 +21,7 @@ func GetArticlesByCategoryDB(id, page, perPage *int) ([]models.Post, int, error)
 	}
 
 	// Получение общего количества записей
-	countQuery := "SELECT COUNT(*) FROM posts WHERE user_id = $1"
+	countQuery := "SELECT COUNT(*) FROM posts WHERE category_id = $1"
 	var totalCount int
 	err = DB.QueryRow(countQuery, *id).Scan(&totalCount)
 	if err != nil {
