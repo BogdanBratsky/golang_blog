@@ -4,7 +4,7 @@ import "blog/models"
 
 func GetUsersFromDB() ([]models.UserView, error) {
 	// sql-запрос на получение данных из таблицы users
-	rows, err := DB.Query("SELECT user_id, user_name, user_email FROM users")
+	rows, err := DB.Query("SELECT user_id, user_name, user_email FROM users ORDER BY user_id DESC")
 	if err != nil {
 		return nil, err
 	}
